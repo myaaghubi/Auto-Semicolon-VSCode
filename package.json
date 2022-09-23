@@ -1,0 +1,88 @@
+{
+  "name": "auto-semicolon",
+  "displayName": "Auto Semicolon",
+  "description": "Auto position for semicolons & move to the end of line after the last bracket. PHP supported",
+  "version": "0.0.1",
+  "publisher": "myaghobi",
+  "license": "MIT",
+  "icon": "icon.png",
+  "bugs": {
+    "url": "https://github.com/myaghobi/OneDarkPro-Mariana/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/myaghobi/OneDarkPro-Mariana"
+  },
+  "engines": {
+    "vscode": "^1.34.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "keybindings",
+    "auto semicolon",
+    "shortcut",
+    "semicolon",
+    "auto",
+    "php"
+  ],
+  "activationEvents": [
+    "onCommand:auto-semicolon.insert-semicolon",
+    "onCommand:auto-semicolon.auto-insert-semicolon"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "auto-semicolon.insert-semicolon",
+        "title": "Insert Semicolon",
+        "category": "Auto Semicolon"
+      }, {
+        "command": "auto-semicolon.auto-insert-semicolon",
+        "title": "Auto Insert Semicolon",
+        "category": "Auto Semicolon"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "auto-semicolon.insert-semicolon",
+        "key": "super+;",
+        "mac": "super+;",
+        "when": "editorTextFocus"
+      }, {
+        "command": "auto-semicolon.auto-insert-semicolon",
+        "key": ";",
+        "mac": ";",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.14.0",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
+    "eslint": "^8.20.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.0.0",
+    "typescript": "^4.7.4",
+    "ts-loader": "^9.3.1",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "@vscode/test-electron": "^2.1.5"
+  }
+}
