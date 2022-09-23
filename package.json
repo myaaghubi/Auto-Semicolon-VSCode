@@ -4,7 +4,7 @@
   "description": "Auto position for semicolons & move to the end of line after the last bracket. PHP supported",
   "version": "0.0.1",
   "publisher": "myaghobi",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "icon": "icon.png",
   "bugs": {
     "url": "https://github.com/myaghobi/Auto-Semicolon-VSCode/issues"
