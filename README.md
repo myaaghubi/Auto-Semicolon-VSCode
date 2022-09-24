@@ -13,8 +13,8 @@ This extension helps by putting semicolons in the right place. I didn't find a s
 - To put semicolon as normal way use `super+;`/`win+;` or use command palette `ctrl+shift+p`>`Insert Semicolon`. 
 
 ## Shots
-![Shot Auto-Semicolon-VSCode](./assets/auto-semicolon1.gif)
+![Shot Auto-Semicolon-VSCode](https://github.com/myaghobi/Auto-Semicolon-VSCode/raw/main/assets/auto-semicolon1.gif)
 
-![Shot Auto-Semicolon-VSCode](./assets/auto-semicolon2.gif)
+![Shot Auto-Semicolon-VSCode](https://github.com/myaghobi/Auto-Semicolon-VSCode/raw/main/assets/auto-semicolon2.gif)
 
-![Shot Auto-Semicolon-VSCode](./assets/auto-semicolon3.gif)
+![Shot Auto-Semicolon-VSCode](https://github.com/myaghobi/Auto-Semicolon-VSCode/raw/main/assets/auto-semicolon3.gif)
