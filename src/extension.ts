@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
-	console.log('activate');
+	removeOldVersionAfterMigration();
 
-	let semicolone = vscode.commands.registerTextEditorCommand('auto-semicolon.insert-semicolon', (editor, textEdit) => {
+	let semicolone = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.insert-semicolon', (editor, textEdit) => {
 		return semiColonCommand(editor, textEdit);
 	});
 
-	let autoSemicolone = vscode.commands.registerTextEditorCommand('auto-semicolon.auto-insert-semicolon', (editor, textEdit) => {
+	let autoSemicolone = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon', (editor, textEdit) => {
 		return autoSemiColonCommand(editor, textEdit);
 	});
 
@@ -16,6 +16,12 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() { }
+
+async function removeOldVersionAfterMigration() {
+		// let oldExists = vscode.commands.executeCommand('workbench.extensions.search', 'myaghobi.auto-semicolon');
+		let uninstallOld = vscode.commands.executeCommand('workbench.extensions.uninstallExtension', 'myaghobi.auto-semicolon');
+		await Promise.all([uninstallOld]);
+}
 
 function semiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) {
 	editor.edit((edit: vscode.TextEditorEdit) => {

@@ -2,7 +2,7 @@
   "name": "auto-semicolon-vscode",
   "displayName": "Auto Semicolon.",
   "description": "Auto position for semicolons & move to the end of line after the last bracket. PHP supported",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "publisher": "myaaghubi",
   "license": "GPL-3.0",
   "icon": "icon.png",
@@ -28,30 +28,30 @@
     "php"
   ],
   "activationEvents": [
-    "onCommand:auto-semicolon.insert-semicolon",
-    "onCommand:auto-semicolon.auto-insert-semicolon"
+    "onCommand:auto-semicolon-vscode.insert-semicolon",
+    "onCommand:auto-semicolon-vscode.auto-insert-semicolon"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "auto-semicolon.insert-semicolon",
-        "title": "Insert Semicolon",
+        "command": "auto-semicolon-vscode.insert-semicolon",
+        "title": "Semicolon > Insert",
         "category": "Auto Semicolon"
       }, {
-        "command": "auto-semicolon.auto-insert-semicolon",
-        "title": "Auto Insert Semicolon",
+        "command": "auto-semicolon-vscode.auto-insert-semicolon",
+        "title": "Semicolon > Auto Insert",
         "category": "Auto Semicolon"
       }
     ],
     "keybindings": [
       {
-        "command": "auto-semicolon.insert-semicolon",
+        "command": "auto-semicolon-vscode.insert-semicolon",
         "key": "super+;",
         "mac": "super+;",
         "when": "editorTextFocus"
       }, {
-        "command": "auto-semicolon.auto-insert-semicolon",
+        "command": "auto-semicolon-vscode.auto-insert-semicolon",
         "key": ";",
         "mac": ";",
         "when": "editorTextFocus"
