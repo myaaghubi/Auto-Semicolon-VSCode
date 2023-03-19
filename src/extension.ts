@@ -1,4 +1,3 @@
-import { allowedNodeEnvironmentFlags } from 'process';
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -15,6 +14,8 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(semicolone);
 	context.subscriptions.push(autoSemicolone);
 }
+
+export function deactivate() { }
 
 function semiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) {
 	editor.edit((edit: vscode.TextEditorEdit) => {
@@ -104,6 +105,3 @@ function isCommented(lineText: string, currentPos: number): boolean {
 	const pos = lineText.lastIndexOf('//', currentPos);
 	return pos >= 0;
 }
-
-// this method is called when your extension is deactivated
-export function deactivate() { }
