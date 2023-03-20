@@ -1,8 +1,6 @@
 import * as vscode from 'vscode';
 
-export function activate(context: vscode.ExtensionContext) {
-	removeOldVersionAfterMigration();
-
+export async function activate(context: vscode.ExtensionContext) {
 	let semicolone = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.insert-semicolon', (editor, textEdit) => {
 		return semiColonCommand(editor, textEdit);
 	});
@@ -13,6 +11,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(semicolone);
 	context.subscriptions.push(autoSemicolone);
+	
+	await removeOldVersionAfterMigration();
 }
 
 export function deactivate() { }

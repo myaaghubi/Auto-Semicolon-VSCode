@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.5
+
+- Some fixes
+
 ## 0.0.2
 
 - Nothing changed yet

@@ -1,4 +1,4 @@
-# Auto Semicolon - VSCode v0.0.4
+# Auto Semicolon - VSCode
 <img src="https://github.com/myaaghubi/Auto-Semicolon-VSCode/blob/main/icon.png?raw=true" alt="Icon Auto Semicolon VSCode" width="100">
 
 This extension helps by putting semicolons in the right place. I didn't find a shit for php so made my shit.
@@ -10,7 +10,7 @@ This extension helps by putting semicolons in the right place. I didn't find a s
 ## Notes
 - `Multiple cursors` has been supported.
 - `PHP` is supported but you can use it for other programming languages just like `javascript`, `c#`, `perl` too.
-- To put semicolon as normal way use `super+;`/`win+;` or use command palette `ctrl+shift+p`>`Insert Semicolon`. 
+- To put semicolon as normal way use `super+;`/`win+;` or use command palette `ctrl+shift+p`>`Semicolon > Insert`. 
 
 ## Shots
 ![Shot Auto-Semicolon-VSCode](https://github.com/myaaghubi/Auto-Semicolon-VSCode/raw/main/assets/auto-semicolon1.gif)

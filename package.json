@@ -2,7 +2,7 @@
   "name": "auto-semicolon-vscode",
   "displayName": "Auto Semicolon.",
   "description": "Auto position for semicolons & move to the end of line after the last bracket. PHP supported",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "myaaghubi",
   "license": "GPL-3.0",
   "icon": "icon.png",
@@ -21,13 +21,13 @@
   ],
   "keywords": [
     "keybindings",
-    "auto semicolon",
+    "auto-semicolon",
     "shortcut",
     "semicolon",
-    "auto",
     "php"
   ],
   "activationEvents": [
+    "onStartupFinished",
     "onCommand:auto-semicolon-vscode.insert-semicolon",
     "onCommand:auto-semicolon-vscode.auto-insert-semicolon"
   ],
