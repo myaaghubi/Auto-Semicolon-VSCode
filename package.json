@@ -1,8 +1,8 @@
 {
   "name": "auto-semicolon-vscode",
-  "displayName": "Auto Semicolon.",
+  "displayName": "Auto Semicolon",
   "description": "Auto position for semicolons & move to the end of line after the last bracket. PHP supported",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "publisher": "myaaghubi",
   "license": "GPL-3.0",
   "icon": "icon.png",
@@ -28,32 +28,46 @@
   ],
   "activationEvents": [
     "onStartupFinished",
-    "onCommand:auto-semicolon-vscode.insert-semicolon",
-    "onCommand:auto-semicolon-vscode.auto-insert-semicolon"
+    "onCommand:auto-semicolon-vscode.position-insert-semicolon",
+    "onCommand:auto-semicolon-vscode.auto-insert-semicolon",
+    "onCommand:auto-semicolon-vscode.auto-insert-semicolon-fte"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "auto-semicolon-vscode.insert-semicolon",
-        "title": "Semicolon > Insert",
+        "command": "auto-semicolon-vscode.position-insert-semicolon",
+        "title": "Insert At The Position",
         "category": "Auto Semicolon"
-      }, {
+      },
+      {
         "command": "auto-semicolon-vscode.auto-insert-semicolon",
-        "title": "Semicolon > Auto Insert",
+        "title": "Auto Insert",
+        "category": "Auto Semicolon"
+      },
+      {
+        "command": "auto-semicolon-vscode.auto-insert-semicolon-fte",
+        "title": "Auto Insert At The End",
         "category": "Auto Semicolon"
       }
     ],
     "keybindings": [
       {
-        "command": "auto-semicolon-vscode.insert-semicolon",
-        "key": "super+;",
-        "mac": "super+;",
+        "command": "auto-semicolon-vscode.position-insert-semicolon",
+        "key": "alt+; ;",
+        "mac": "alt+; ;",
         "when": "editorTextFocus"
-      }, {
+      },
+      {
         "command": "auto-semicolon-vscode.auto-insert-semicolon",
         "key": ";",
         "mac": ";",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "auto-semicolon-vscode.auto-insert-semicolon-fte",
+        "key": "alt+; alt+;",
+        "mac": "alt+; alt+;",
         "when": "editorTextFocus"
       }
     ]

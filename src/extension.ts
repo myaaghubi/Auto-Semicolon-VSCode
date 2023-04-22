@@ -1,27 +1,33 @@
 import * as vscode from 'vscode';
 
 export async function activate(context: vscode.ExtensionContext) {
-	let semicolone = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.insert-semicolon', (editor, textEdit) => {
-		return semiColonCommand(editor, textEdit);
-	});
+	let semicolonAtPosition = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.position-insert-semicolon',
+		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
+			return semiColonCommand(editor, textEdit);
+		}
+	);
 
-	let autoSemicolone = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon', (editor, textEdit) => {
-		return autoSemiColonCommand(editor, textEdit);
-	});
+	let autoSemicolone = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon',
+		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
+			return autoSemiColonCommand(editor, textEdit, false);
+		}
+	);
 
-	context.subscriptions.push(semicolone);
+	// ignore the {}, put it at the end 
+	let autoSemicoloneFTE = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon-fte',
+		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
+			return autoSemiColonCommand(editor, textEdit, true);
+		}
+	);
+
+	context.subscriptions.push(semicolonAtPosition);
 	context.subscriptions.push(autoSemicolone);
-	
+	context.subscriptions.push(autoSemicoloneFTE);
+
 	await removeOldVersionAfterMigration();
 }
 
 export function deactivate() { }
-
-async function removeOldVersionAfterMigration() {
-		// let oldExists = vscode.commands.executeCommand('workbench.extensions.search', 'myaghobi.auto-semicolon');
-		let uninstallOld = vscode.commands.executeCommand('workbench.extensions.uninstallExtension', 'myaghobi.auto-semicolon');
-		await Promise.all([uninstallOld]);
-}
 
 function semiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) {
 	editor.edit((edit: vscode.TextEditorEdit) => {
@@ -32,11 +38,11 @@ function semiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditor
 }
 
 const unallowedEnd = [';', '{', '}'];
-function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) {
+function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit, forceToEnd: boolean) {
 	const selections: vscode.Selection[] = [];
-	editor.edit((editBuilder) => {
+	editor.edit(() => {
 		try {
-			editor.selections.forEach(function (selection) {
+			editor.selections.forEach((selection: { active: { line: any; character: number; }; }) => {
 				const line = editor.document.lineAt(selection.active.line);
 				const lineText = line.text.trimEnd();
 				const linelastText = lineText[lineText.length - 1];
@@ -48,21 +54,28 @@ function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 					textEdit.insert(selection.active, ';');
 					position = newPosition(line, selection.active.character + 1);
 
-				} else if (isBetweenTags('for', ')', lineText, currentPos)) {
+				} else if (!forceToEnd && isBetweenTags('for', ')', lineText, currentPos)) {
 					textEdit.insert(selection.active, ';');
 					position = newPosition(line, selection.active.character + 1);
 
-				} else if (isBetweenTags('{', '}', lineText, currentPos)) {
+				} else if (!forceToEnd && isBetweenTags('{', '}', lineText, currentPos)) {
 					let length = putSemicolonBefore('}', textEdit, selection, line);
 					position = newPosition(line, length);
 
 				} else {
+					let length = line.range.end.character + 1;
+
 					if (!unallowedEnd.includes(linelastText)) {
-						let length = putSemicolonBefore('//', textEdit, selection, line);
+						length = putSemicolonBefore('//', textEdit, selection, line);
+					} else {
+						if (currentPos == line.text.length) {
+							length = putSemicolonBefore('//', textEdit, selection, line)+1;
+						}
 					}
-					position = newPosition(line, line.range.end.character + 1);
 					
+					position = newPosition(line, length);
 				}
+
 				selection = new vscode.Selection(position, position);
 				selections.push(selection);
 			});
@@ -92,7 +105,7 @@ function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, select
 		return length;
 	}
 
-	textEdit.insert(newPosition(line, line.range.end.character+1), ';');
+	textEdit.insert(newPosition(line, line.range.end.character + 1), ';');
 	return length;
 }
 
@@ -103,11 +116,17 @@ function newPosition(line: vscode.TextLine, position: number): vscode.Position {
 function isBetweenTags(open: string, close: string, lineText: string, currentPos: number): boolean {
 	const posOpen = lineText.lastIndexOf(open, currentPos);
 	const posClose = lineText.indexOf(close, currentPos);
-	const posClose_ = lineText.lastIndexOf(close, currentPos-1);
-	return posOpen >= 0 && posOpen < currentPos && currentPos <= posClose && posClose_<posOpen;
+	const posClose_ = lineText.lastIndexOf(close, currentPos - 1);
+	return posOpen >= 0 && posOpen < currentPos && currentPos <= posClose && posClose_ < posOpen;
 }
 
 function isCommented(lineText: string, currentPos: number): boolean {
 	const pos = lineText.lastIndexOf('//', currentPos);
 	return pos >= 0;
+}
+
+async function removeOldVersionAfterMigration() {
+	// let oldExists = vscode.commands.executeCommand('workbench.extensions.search', 'myaghobi.auto-semicolon');
+	let uninstallOld = vscode.commands.executeCommand('workbench.extensions.uninstallExtension', 'myaghobi.auto-semicolon');
+	await Promise.all([uninstallOld]);
 }
