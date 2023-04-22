@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.0.6
+
+- Shortcut changed + a new shortcut
+- Some changed & fixes
+- Icon changed
+
 ## 0.0.5
 
 - Some fixes
