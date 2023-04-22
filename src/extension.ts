@@ -42,7 +42,7 @@ function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 	const selections: vscode.Selection[] = [];
 	editor.edit(() => {
 		try {
-			editor.selections.forEach((selection: { active: { line: any; character: number; }; }) => {
+			editor.selections.forEach((selection) => {
 				const line = editor.document.lineAt(selection.active.line);
 				const lineText = line.text.trimEnd();
 				const linelastText = lineText[lineText.length - 1];
@@ -80,7 +80,7 @@ function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 				selections.push(selection);
 			});
 		} catch (e) {
-			console.log(e);
+			//console.log(e);
 		}
 	}).then(() => {
 		editor.selections = selections;
