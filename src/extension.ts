@@ -13,7 +13,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	);
 
-	// ignore the {}, put it at the end 
+	// auto put the semicolon (ignore the {}) at the end 
 	let autoSemicoloneFTE = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon-fte',
 		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
 			return autoSemiColonCommand(editor, textEdit, true);
@@ -37,7 +37,7 @@ function semiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditor
 	});
 }
 
-const unallowedEnd = [';', '{', '}'];
+const unallowedEnd = [';', '{', '}', '(', ')'];
 function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit, forceToEnd: boolean) {
 	const selections: vscode.Selection[] = [];
 	editor.edit(() => {
@@ -54,7 +54,7 @@ function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 					textEdit.insert(selection.active, ';');
 					position = newPosition(line, selection.active.character + 1);
 
-				} else if (!forceToEnd && isBetweenTags('for', ')', lineText, currentPos)) {
+				} else if (!forceToEnd && isBetweenTags('for', ')', lineText, currentPos-4)) { // -4 ? 'for('.length=4
 					textEdit.insert(selection.active, ';');
 					position = newPosition(line, selection.active.character + 1);
 
@@ -66,11 +66,9 @@ function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 					let length = line.range.end.character + 1;
 
 					if (!unallowedEnd.includes(linelastText)) {
-						length = putSemicolonBefore('//', textEdit, selection, line);
-					} else {
-						if (currentPos == line.text.length) {
-							length = putSemicolonBefore('//', textEdit, selection, line)+1;
-						}
+						length = putSemicolonBefore('//', textEdit, selection, line)+1;
+					} else if (currentPos == line.text.length) {
+						length = putSemicolonBefore('//', textEdit, selection, line)+1;
 					}
 					
 					position = newPosition(line, length);
@@ -102,10 +100,10 @@ function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, select
 			textEdit.delete(new vscode.Selection(newPosition(line, 0), newPosition(line, line.text.length)));
 			textEdit.insert(newPosition(line, 0), lineText);
 		}
-		return length;
+		return length-tag.length+1;
 	}
 
-	textEdit.insert(newPosition(line, line.range.end.character + 1), ';');
+	textEdit.insert(newPosition(line, length), ';');
 	return length;
 }
 
