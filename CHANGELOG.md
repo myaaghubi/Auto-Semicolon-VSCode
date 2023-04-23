@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.0.7
+
+- A couple of bug fixes
+- Some improvements
+
 ## 0.0.6
 
 - Shortcut changed + a new shortcut
