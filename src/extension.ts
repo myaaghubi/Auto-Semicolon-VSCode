@@ -37,7 +37,7 @@ function semiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditor
 	});
 }
 
-const unallowedEnd = [';', '{', '}', '(', ')'];
+const unallowedEnd = [';', '{', '}'];
 function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit, forceToEnd: boolean) {
 	const selections: vscode.Selection[] = [];
 	editor.edit(() => {
