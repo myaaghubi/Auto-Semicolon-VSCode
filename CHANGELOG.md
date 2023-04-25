@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.8
+
+- A bug fixed
+
 ## 0.0.7
 
 - A couple of bug fixes
