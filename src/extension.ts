@@ -125,35 +125,22 @@ function isCommented(lineText: string, currentPos: number): boolean {
 
 const stringLiteralMarks = ["'", "\"", "`"];
 function isInStringLiteral(lineText: string, currentPos: number): boolean {
-	let rangeLast = "";
 	let matchingQuote = null;
 	let char = '';
-	// let charLast = '';
 	let i = 0;
 	while (i < currentPos) {
 		char = lineText.charAt(i++);
 
 		if (stringLiteralMarks.includes(char)) {
-			// if (charLast=='\\') {
-			//     console.log(`----------`);
-			//     continue;
-			// }
-			if (matchingQuote == null) {
+			if (matchingQuote === null) {
 				matchingQuote = char;
-				rangeLast = lineText.substring(i - 5 > 0 ? i - 5 : 0, i + 5 > lineText.length ? i + 5 : lineText.length);
 			} else if (matchingQuote === char) {
 				matchingQuote = null;
 			}
 		}
-
-		//   charLast = char;
 	}
-
-	if (matchingQuote !== null) {
-		console.log(`Cursor is after an opening ${matchingQuote}.`);
-	} else {
-		console.log(`Cursor is FREE! ${matchingQuote}.`);
-	}
+	
+	// if is the cursor after an opening string literal mark
 	return matchingQuote !== null;
 }
 
