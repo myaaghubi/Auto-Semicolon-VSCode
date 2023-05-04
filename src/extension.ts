@@ -37,7 +37,7 @@ function semiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditor
 	});
 }
 
-const unallowedEnd = [';', '{', '}'];
+const unallowedEnds = [';', '{', '}'];
 function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit, forceToEnd: boolean) {
 	const selections: vscode.Selection[] = [];
 	editor.edit(() => {
@@ -50,11 +50,11 @@ function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 
 				let position: vscode.Position;
 
-				if (lineText.length === 0 || isCommented(lineText, currentPos)) {
+				if (lineText.length === 0 || isCommented(lineText, currentPos) || isInStringLiteral(lineText, currentPos)) {
 					textEdit.insert(selection.active, ';');
 					position = newPosition(line, selection.active.character + 1);
 
-				} else if (!forceToEnd && isBetweenTags('for', ')', lineText, currentPos-4)) { // -4 ? 'for('.length=4
+				} else if (!forceToEnd && isBetweenTags('for', ')', lineText, currentPos - 4)) { // -4 ? 'for('.length=4
 					textEdit.insert(selection.active, ';');
 					position = newPosition(line, selection.active.character + 1);
 
@@ -65,12 +65,12 @@ function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 				} else {
 					let length = line.range.end.character + 1;
 
-					if (!unallowedEnd.includes(linelastText)) {
-						length = putSemicolonBefore('//', textEdit, selection, line)+1;
-					} else if (currentPos == line.text.length) {
-						length = putSemicolonBefore('//', textEdit, selection, line)+1;
+					if (!unallowedEnds.includes(linelastText)) {
+						length = putSemicolonBefore('//', textEdit, selection, line) + 1;
+					} else if (currentPos === line.text.length) {
+						length = putSemicolonBefore('//', textEdit, selection, line) + 1;
 					}
-					
+
 					position = newPosition(line, length);
 				}
 
@@ -94,13 +94,13 @@ function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, select
 		let lineTextTrimmed = lineText.substring(0, posClose).trimEnd();
 		length = lineTextTrimmed.length;
 
-		if (!unallowedEnd.includes(lineTextTrimmed[lineTextTrimmed.length - 1])) {
+		if (!unallowedEnds.includes(lineTextTrimmed[lineTextTrimmed.length - 1])) {
 			lineText = lineText.replace(lineTextTrimmed, lineTextTrimmed + ';');
 			length += 1;
 			textEdit.delete(new vscode.Selection(newPosition(line, 0), newPosition(line, line.text.length)));
 			textEdit.insert(newPosition(line, 0), lineText);
 		}
-		return length-tag.length+1;
+		return length - tag.length + 1;
 	}
 
 	textEdit.insert(newPosition(line, length), ';');
@@ -121,6 +121,27 @@ function isBetweenTags(open: string, close: string, lineText: string, currentPos
 function isCommented(lineText: string, currentPos: number): boolean {
 	const pos = lineText.lastIndexOf('//', currentPos);
 	return pos >= 0;
+}
+
+const stringLiteralMarks = ["'", "\"", "`"];
+function isInStringLiteral(lineText: string, currentPos: number): boolean {
+	let matchingQuote = null;
+	let char = '';
+	let i = 0;
+	while (i < currentPos) {
+		char = lineText.charAt(i++);
+
+		if (stringLiteralMarks.includes(char)) {
+			if (matchingQuote === null) {
+				matchingQuote = char;
+			} else if (matchingQuote === char) {
+				matchingQuote = null;
+			}
+		}
+	}
+	
+	// if is the cursor after an opening string literal mark
+	return matchingQuote !== null;
 }
 
 async function removeOldVersionAfterMigration() {
