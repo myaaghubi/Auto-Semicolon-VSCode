@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0
+
+- Not gonna auto add `;` in string literals
+- Icon changed
+- A bit changes in code
+
 ## 0.0.8
 
 - A bug fixed
