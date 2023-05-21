@@ -1,22 +1,23 @@
 import * as vscode from 'vscode';
 
 export async function activate(context: vscode.ExtensionContext) {
+	
 	let semicolonAtPosition = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.position-insert-semicolon',
 		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
-			return semiColonCommand(editor, textEdit);
+			return semicolonCommand(editor, textEdit);
 		}
 	);
 
 	let autoSemicolone = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon',
 		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
-			return autoSemiColonCommand(editor, textEdit, false);
+			return autoSemicolonCommand(editor, textEdit, false);
 		}
 	);
 
 	// auto put the semicolon (ignore the {}) at the end 
 	let autoSemicoloneFTE = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon-fte',
 		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
-			return autoSemiColonCommand(editor, textEdit, true);
+			return autoSemicolonCommand(editor, textEdit, true);
 		}
 	);
 
@@ -29,7 +30,15 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() { }
 
-function semiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) {
+function getConfig() {
+	return vscode.workspace.getConfiguration('auto-semicolon-vscode');
+}
+
+function getUnallowdEndsForAutoSemicolon() {
+	return getConfig().unallowedEnds.split(",").map((string: string) => string.trim());
+}
+
+function semicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) {
 	editor.edit((edit: vscode.TextEditorEdit) => {
 		for (let selection of editor.selections) {
 			edit.insert(selection.active, ';');
@@ -37,8 +46,7 @@ function semiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditor
 	});
 }
 
-const unallowedEnds = [';', '{', '}'];
-function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit, forceToEnd: boolean) {
+function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit, forceToEnd: boolean) {
 	const selections: vscode.Selection[] = [];
 	editor.edit(() => {
 		try {
@@ -80,7 +88,7 @@ function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 				} else {
 					let length = line.range.end.character + 1;
 
-					if (!unallowedEnds.includes(linelastText)) {
+					if (!getUnallowdEndsForAutoSemicolon().includes(linelastText)) {
 						length = putSemicolonBefore('//', textEdit, selection, line) + 1;
 					} else if (currentPos === line.text.length) {
 						length = putSemicolonBefore('//', textEdit, selection, line) + 1;
@@ -93,7 +101,6 @@ function autoSemiColonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 				selections.push(selection);
 			});
 		} catch (e) {
-			//console.log(e);
 		}
 	}).then(() => {
 		editor.selections = selections;
@@ -106,7 +113,7 @@ function putSemicolonAfterPos(position: number, textEdit: vscode.TextEditorEdit,
 
 	let lineTextTrimmed = lineText.substring(0, position);//.trimEnd();
 
-	if (!unallowedEnds.includes(lineTextTrimmed[lineTextTrimmed.length - 1])) {
+	if (!getUnallowdEndsForAutoSemicolon().includes(lineTextTrimmed[lineTextTrimmed.length - 1])) {
 		lineText = lineText.replace(lineTextTrimmed, lineTextTrimmed + ';');
 		textEdit.delete(new vscode.Selection(newPosition(line, 0), newPosition(line, line.text.length)));
 		textEdit.insert(newPosition(line, 0), lineText);
@@ -123,7 +130,7 @@ function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, select
 		let lineTextTrimmed = lineText.substring(0, posClose).trimEnd();
 		length = lineTextTrimmed.length;
 
-		if (!unallowedEnds.includes(lineTextTrimmed[lineTextTrimmed.length - 1])) {
+		if (!getUnallowdEndsForAutoSemicolon().includes(lineTextTrimmed[lineTextTrimmed.length - 1])) {
 			lineText = lineText.replace(lineTextTrimmed, lineTextTrimmed + ';');
 			length += 1;
 			textEdit.delete(new vscode.Selection(newPosition(line, 0), newPosition(line, line.text.length)));
@@ -184,6 +191,10 @@ function isInStringLiteral(lineText: string, currentPos: number): boolean {
 
 	// if is the cursor after an opening string literal mark
 	return matchingQuote !== null;
+}
+
+async function message(message: string) {
+	await vscode.window.showWarningMessage(message);
 }
 
 async function removeOldVersionAfterMigration() {

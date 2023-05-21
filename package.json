@@ -1,8 +1,8 @@
 {
   "name": "auto-semicolon-vscode",
   "displayName": "Auto Semicolon",
-  "description": "Auto position for semicolons & move to the end of line after the last bracket. PHP supported",
-  "version": "1.0.0",
+  "description": "Auto put/position for semicolons & move to the end of line after the last bracket. PHP supported `javascript`, `c#`, `c/c++`, `java`, `perl`, `dart`, etc. are ok.",
+  "version": "1.2.0",
   "publisher": "myaaghubi",
   "license": "GPL-3.0",
   "icon": "icon.png",
@@ -78,7 +78,20 @@
         "mac": "alt+; alt+;",
         "when": "editorTextFocus"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "",
+      "properties": {
+        "auto-semicolon-vscode.unallowedEnds": {
+          "type": "string",
+          "default": [
+            ";,{,}"
+          ],
+          "description": "Just `Auto Move` gonna apply for lines ends to these characters.",
+          "scope": "resource"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
