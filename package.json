@@ -80,27 +80,27 @@
       }
     ],
     "configuration": {
-      "title": "autoSemicolon",
+      "title": "Auto Semicolon",
       "properties": {
-        "autoSemicolon.unallowedEnds": {
-          "type": "string",
+        "autoSemicolon.autoSemicolon.unallowedEnds": {
           "default": ";,{,}",
-          "description": "Just `Auto Move` gonna apply for lines ends to these characters."
+          "description": "Just `Auto Move` gonna apply for lines ends to these characters.",
+          "type": "string"
         },
-        "autoSemicolon.format.autoSemicolon": {
-          "type": "string",
-          "default": "*.php,*.js,*.ts,*.c,*.cpp,*.java",
-          "description": "File formats `allowed` for `Auto Semicolon`.\nFile formats not included in both of the list, gonna be ignored via this extension."
+        "autoSemicolon.supportedFileFormats.autoSemicolon": {
+          "default": ".php,.js,.ts,.c,.cpp,.java",
+          "description": "File formats for `Auto Put Semicolon` by `;`.\nFile formats not included in both of the lists, gonna be ignored via this extension.",
+          "type": "string"
         },
-        "autoSemicolon.format.autoMoveEnable": {
-          "type": "boolean",
-          "default": false,
-          "description": "`Auto Move` feature enable/disable."
+        "autoSemicolon.supportedFileFormats.autoMoveEnable": {
+          "default": true,
+          "description": "`Auto Move` feature enable/disable.",
+          "type": "boolean"
         },
-        "autoSemicolon.format.autoMove": {
-          "type": "string",
-          "default": "*.go,*.py",
-          "description": "Files with these formats `allowed` for `Auto Move` to the end of the line by pressing `;` but `not allowed` for `Auto Semicolon`.\nFile formats not included in both of the list, gonna be ignored via this extension."
+        "autoSemicolon.supportedFileFormats.autoMoveFormats": {
+          "default": ".go,.py",
+          "description": "File formats for `Auto Move To End` by `;` not `Auto Put Semicolon`.\nFile formats not included in both of the lists, gonna be ignored via this extension.",
+          "type": "string"
         }
       }
     }

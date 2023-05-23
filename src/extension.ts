@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 import * as vscode from 'vscode';
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -30,28 +31,31 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() { }
 
+type RegExpMatchArrayWithIndex = RegExpMatchArray & { index: number };
+
 // these two variables gonna fill later
 let autoSemicolonFormatsIncluded = true;
 let autoMoveFormatsIncluded = false;
+
 function getConfig() {
 	return vscode.workspace.getConfiguration('autoSemicolon');
 }
 
 function isUnallowdEndsIncluded(lastCharacter: string) {
-	let unallowedEnds = getConfig().unallowedEnds.split(",");
+	let unallowedEnds = getConfig().autoSemicolon.unallowedEnds.split(",");
 	if (!Array.isArray(unallowedEnds))
 		return false;
 
 	return unallowedEnds.includes(lastCharacter);
 }
 
-function isAutoSemicolonFormatsIncluded(languageId: string|null) {
+function isAutoSemicolonFormatsIncluded(languageId: string | undefined) {
 	if (!languageId)
 		return false;
 
-	languageId = '*.' + languageId;
+	languageId = '.' + languageId;
 
-	let formats = getConfig().format.autoSemicolon.split(",");
+	let formats = getConfig().supportedFileFormats.autoSemicolon.split(",");
 	if (!Array.isArray(formats))
 		return false;
 
@@ -59,17 +63,16 @@ function isAutoSemicolonFormatsIncluded(languageId: string|null) {
 		if (item.trim() == languageId)
 			return true;
 	}
-
 	return false;
 }
 
-function isAutoMoveFormatsIncluded(languageId: string|null) {
-	if (!languageId || getConfig().format.autoMoveEnable)
+function isAutoMoveFormatsIncluded(languageId: string | undefined) {
+	if (isEmpty(languageId) || !getConfig().supportedFileFormats.autoMoveEnable)
 		return false;
 
-	languageId = '*.' + languageId;
+	languageId = '.' + languageId;
 
-	let formats = getConfig().format.autoMove.split(",");
+	let formats = getConfig().supportedFileFormats.autoMoveFormats.split(",");
 	if (!Array.isArray(formats))
 		return false;
 
@@ -104,21 +107,19 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 				autoSemicolonFormatsIncluded = isAutoSemicolonFormatsIncluded(languageId);
 				autoMoveFormatsIncluded = isAutoMoveFormatsIncluded(languageId);
 
+				position = newPosition(line, selection.active.character + 1);
+
 				if (lineText.length === 0 || !languageId) {
 					textEdit.insert(selection.active, ';');
-					position = newPosition(line, selection.active.character + 1);
 
 				} else if (!autoSemicolonFormatsIncluded && !autoMoveFormatsIncluded) {
 					textEdit.insert(selection.active, ';');
-					position = newPosition(line, selection.active.character + 1);
 
 				} else if (!forceToEnd && isCommented(lineText, currentPos)) {
 					textEdit.insert(selection.active, ';');
-					position = newPosition(line, selection.active.character + 1);
 
 				} else if (!forceToEnd && isInStringLiteral(lineText, currentPos)) {
 					textEdit.insert(selection.active, ';');
-					position = newPosition(line, selection.active.character + 1);
 
 				} else if (!forceToEnd && (match = findTheForStatement(lineText, currentPos)) !== null) {
 					// each for(;;) statement has two ";"
@@ -126,18 +127,23 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 						textEdit.insert(selection.active, ';');
 						position = newPosition(line, selection.active.character + 1);
 					} else if (!forceToEnd && autoSemicolonFormatsIncluded && (!isUnallowdEndsIncluded(lineText[lineText.length - 1]) || currentPos === line.text.length)) {
-						let length = putSemicolonAfterPos(match.index + match[0].length, textEdit, selection, line);
+						let length = putSemicolonAfterPos((match as RegExpMatchArrayWithIndex).index + match[0].length, textEdit, selection, line);
 						position = newPosition(line, length);
 					}
 
-				} else {
+				} else if (!forceToEnd && autoSemicolonFormatsIncluded) {
 					let length = line.range.end.character + 1;
-					if (!forceToEnd && autoSemicolonFormatsIncluded && isBetweenTags('{', '}', lineText, currentPos)) {
+					if (isBetweenTags('{', '}', lineText, currentPos)) {
 						length = putSemicolonBefore('}', textEdit, selection, line);
-					} else if (!forceToEnd && autoSemicolonFormatsIncluded && (!isUnallowdEndsIncluded(lineText[lineText.length - 1]) || currentPos === line.text.length)) {
+					} else if (!isUnallowdEndsIncluded(lineText[lineText.length - 1]) || currentPos === line.text.length) {
 						length = putSemicolonBefore('//', textEdit, selection, line) + 1;
 					}
 
+					position = newPosition(line, length);
+
+				} else {
+					// just move to the end
+					let length = line.range.end.character + 1;
 					position = newPosition(line, length);
 				}
 
@@ -241,8 +247,15 @@ function isInStringLiteral(lineText: string, currentPos: number): boolean {
 	return matchingQuote !== null;
 }
 
-async function message(message: string) {
-	await vscode.window.showWarningMessage(message);
+function isEmpty(value: string | any[] | null): boolean {
+	if (Array.isArray(value))
+		return false;
+	return (value == null || value.length === 0);
+}
+
+async function message(message: string | any[] | null) {
+	console.log(message);
+	await vscode.window.showWarningMessage(message.toString());
 }
 
 async function removeOldVersionAfterMigration() {
