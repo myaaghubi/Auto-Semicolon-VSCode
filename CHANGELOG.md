@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.3.0
+
+- Added some custom settings
+- The `for(;;)` statement improved
+- Some fixes & changes
+
 ## 1.0.0
 
 - Not gonna auto add `;` in string literals

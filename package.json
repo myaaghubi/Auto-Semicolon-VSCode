@@ -25,14 +25,18 @@
     "keybindings",
     "shortcut",
     "semicolon",
+    "handy",
     "php",
     "javascript",
+    "typescript",
     "c#",
     "c",
     "c++",
     "java",
     "perl",
-    "dart"
+    "dart",
+    "python",
+    "go"
   ],
   "activationEvents": [
     "onStartupFinished",
@@ -88,7 +92,7 @@
           "type": "string"
         },
         "autoSemicolon.supportedFileFormats.autoSemicolon": {
-          "default": ".php,.js,.ts,.c,.cpp,.java",
+          "default": ".php,.js,.ts,.c,.cpp,.cs,.dart,.java",
           "description": "File formats for `Auto Put Semicolon` by `;`.\nFile formats not included in both of the lists, gonna be ignored via this extension.",
           "type": "string"
         },
