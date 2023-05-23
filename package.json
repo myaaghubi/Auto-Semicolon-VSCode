@@ -1,8 +1,8 @@
 {
   "name": "auto-semicolon-vscode",
   "displayName": "Auto Semicolon",
-  "description": "Auto position for semicolons & move to the end of line after the last bracket. PHP supported",
-  "version": "1.0.0",
+  "description": "Auto put/position for semicolons & move to the end of line after the last bracket. PHP supported `javascript`, `c#`, `c/c++`, `java`, `perl`, `dart`, etc. are ok.",
+  "version": "1.3.0",
   "publisher": "myaaghubi",
   "license": "GPL-3.0",
   "icon": "icon.png",
@@ -25,14 +25,18 @@
     "keybindings",
     "shortcut",
     "semicolon",
+    "handy",
     "php",
     "javascript",
+    "typescript",
     "c#",
     "c",
     "c++",
     "java",
     "perl",
-    "dart"
+    "dart",
+    "python",
+    "go"
   ],
   "activationEvents": [
     "onStartupFinished",
@@ -78,7 +82,32 @@
         "mac": "alt+; alt+;",
         "when": "editorTextFocus"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Auto Semicolon",
+      "properties": {
+        "autoSemicolon.autoSemicolon.unallowedEnds": {
+          "default": ";,{,}",
+          "description": "Just `Auto Move` gonna apply for lines ends to these characters.",
+          "type": "string"
+        },
+        "autoSemicolon.supportedFileFormats.autoSemicolon": {
+          "default": ".php,.js,.ts,.c,.cpp,.cs,.dart,.java",
+          "description": "File formats for `Auto Put Semicolon` by `;`.\nFile formats not included in both of the lists, gonna be ignored via this extension.",
+          "type": "string"
+        },
+        "autoSemicolon.supportedFileFormats.autoMoveEnable": {
+          "default": true,
+          "description": "`Auto Move` feature enable/disable.",
+          "type": "boolean"
+        },
+        "autoSemicolon.supportedFileFormats.autoMoveFormats": {
+          "default": ".go,.py",
+          "description": "File formats for `Auto Move To End` by `;` not `Auto Put Semicolon`.\nFile formats not included in both of the lists, gonna be ignored via this extension.",
+          "type": "string"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
