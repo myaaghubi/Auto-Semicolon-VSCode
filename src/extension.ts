@@ -66,7 +66,7 @@ function isAutoSemicolonFormatsIncluded(languageId: string | undefined) {
 	return false;
 }
 
-function isAutoMoveFormatsIncluded(languageId: string | undefined) {
+function isAutoMoveFormatsIncluded(languageId: string | null | undefined) {
 	if (isEmpty(languageId) || !getConfig().supportedFileFormats.autoMoveEnable)
 		return false;
 
@@ -247,15 +247,17 @@ function isInStringLiteral(lineText: string, currentPos: number): boolean {
 	return matchingQuote !== null;
 }
 
-function isEmpty(value: string | any[] | null): boolean {
+function isEmpty(value: string | any[] | null | undefined): boolean {
 	if (Array.isArray(value))
 		return false;
 	return (value == null || value.length === 0);
 }
 
-async function message(message: string | any[] | null) {
+async function message(message: string | any[] | null | undefined) {
 	console.log(message);
-	await vscode.window.showWarningMessage(message.toString());
+	await vscode.window.showWarningMessage(async function (params: string | any[] | null | undefined) {
+		message;
+	}.toString());
 }
 
 async function removeOldVersionAfterMigration() {
