@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.5.1
+
+- Some fixes & changes
+
 ## 1.5.0
 
 - Added 2 new options in the settings

@@ -1,5 +1,5 @@
 # Auto Semicolon - VSCode
-<img src="https://github.com/myaaghubi/Auto-Semicolon-VSCode/blob/main/icon.png?raw=true" alt="Icon Auto Semicolon VSCode" width="100">
+<img src="https://github.com/myaaghubi/Auto-Semicolon-VSCode/blob/main/icon.png?raw=true" alt="Icon Auto Semicolon VSCode" width="128">
 
 [![release](https://img.shields.io/github/release/myaaghubi/Auto-Semicolon-VSCode.svg?style=for-the-badge&logo=github&logoColor=white&colorA=2b303b&colorB=00e8c6)](https://github.com/myaaghubi/Auto-Semicolon-VSCode/releases/latest)
 [![rating](https://img.shields.io/visual-studio-marketplace/stars/myaaghubi.auto-semicolon-vscode?style=for-the-badge&logo=reverbnation&logoColor=white&colorA=2b303b&colorB=FFE66D)](https://marketplace.visualstudio.com/items?itemName=myaaghubi.auto-semicolon-vscode)

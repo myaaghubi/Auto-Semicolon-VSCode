@@ -2,7 +2,6 @@
 import * as vscode from 'vscode';
 
 export async function activate(context: vscode.ExtensionContext) {
-
 	let semicolonAtPosition = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.position-insert-semicolon',
 		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
 			return semicolonCommand(editor, textEdit);
@@ -61,8 +60,6 @@ function isAutoSemicolonLanguageIdIncluded(languageId: string | undefined) {
 	if (!languageId)
 		return false;
 
-	languageId = languageId;
-
 	let formats = getConfig().supportedLanguageId.autoInsertSemicolon.split(",");
 	if (!Array.isArray(formats))
 		return false;
@@ -77,8 +74,6 @@ function isAutoSemicolonLanguageIdIncluded(languageId: string | undefined) {
 function isAutoMoveLanguageIdIncluded(languageId: string | null | undefined) {
 	if (isEmpty(languageId) || !getConfig().supportedLanguageId.autoMoveEnable)
 		return false;
-
-	languageId = languageId;
 
 	let formats = getConfig().supportedLanguageId.autoMoveFormats.split(",");
 	if (!Array.isArray(formats))
@@ -174,7 +169,7 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 
 function putSemicolonAfterPos(position: number, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine): number {
 	position = position >= 0 ? position : 0;
-	return putSemicolonBefore('//',textEdit, selection, line)+1;
+	return putSemicolonBefore('//', textEdit, selection, line) + 1;
 }
 
 function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine): number {
@@ -276,7 +271,7 @@ async function taskChecker(context: vscode.ExtensionContext) {
 		context.secrets.store(`commented`, '0');
 	}
 
-	if (runCounter <= 0) {
+	if (runCounter <= 1) {
 		await showSettingsCheckMessage();
 		await removeOldVersionAfterMigration();
 	} else if (runCounter >= 100) {
