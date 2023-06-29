@@ -1,8 +1,8 @@
 {
   "name": "auto-semicolon-vscode",
   "displayName": "Auto Semicolon",
-  "description": "Auto put/position for semicolons & move to the end of line after the last bracket. PHP supported `javascript`, `c#`, `c/c++`, `java`, `perl`, `dart`, etc. are ok.",
-  "version": "1.5.0",
+  "description": "Both `Semicolon separated` and `Non-Semicolon separated` programming languages are supported",
+  "version": "1.5.1",
   "publisher": "myaaghubi",
   "license": "GPL-3.0",
   "icon": "icon.png",
@@ -113,12 +113,12 @@
         },
         "autoSemicolon.supportedLanguageId.autoMoveFormats": {
           "default": "go,python,pascal,delphi,bash,shellscript,bat,scala,kotlin,r,fsharp",
-          "description": "LanguageIds (comma-separated) supported for `Auto Move To End` via `;` not `Auto Put Semicolon`.\nFor languageId/s not included in both of the lists, gonna be ignored via this extension.",
+          "description": "LanguageIds (comma-separated) supported for `Auto Move To End` via `;` not `Auto Insert Semicolon`.\nFor languageId/s not included in both of the lists, gonna be ignored via this extension.",
           "type": "string"
         },
         "autoSemicolon.supportedLanguageId.ignores.quotes": {
           "default": true,
-          "description": "Support `AutoInsertSemicolon` or `AutoMoveFormats` in quotes?",
+          "description": "Support `AutoInsertSemicolon` and/or `AutoMoveFormats` in quotes?",
           "type": "boolean"
         },
         "autoSemicolon.supportedLanguageId.ignores.theForStatement": {
