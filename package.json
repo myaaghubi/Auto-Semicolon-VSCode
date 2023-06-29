@@ -101,27 +101,27 @@
           "description": "Just `Auto Move` gonna apply for lines ends to these characters (comma-separated).",
           "type": "string"
         },
-        "autoSemicolon.supportedFileFormats.autoInsertSemicolon": {
-          "default": ".js,.ts,.php,.pl,.c,.cpp,.cs,.dart,.java,.swift,.rjs",
-          "description": "File formats (comma-separated) for `AutoInsertSemicolon` via `;`.\nFile formats not included in both of the lists, gonna be ignored via this extension.",
+        "autoSemicolon.supportedLanguageId.autoInsertSemicolon": {
+          "default": "javascript,typescript,php,perl,c,objective-c,cpp,objective-cpp,csharp,dart,java,swift,ruby",
+          "description": "LanguageIds (comma-separated) supported for `AutoInsertSemicolon` via `;`.\nFor languageId/s not included in both of the lists, gonna be ignored via this extension.",
           "type": "string"
         },
-        "autoSemicolon.supportedFileFormats.autoMoveEnable": {
+        "autoSemicolon.supportedLanguageId.autoMoveEnable": {
           "default": true,
           "description": "`Auto Move` feature enable/disable.",
           "type": "boolean"
         },
-        "autoSemicolon.supportedFileFormats.autoMoveFormats": {
-          "default": ".go,.py,.pas,.dpr,.sh,.bat,.scl,.kt,.kts,.ktm,.r",
-          "description": "File formats (comma-separated) for `Auto Move To End` via `;` not `Auto Put Semicolon`.\nFile formats not included in both of the lists, gonna be ignored via this extension.",
+        "autoSemicolon.supportedLanguageId.autoMoveFormats": {
+          "default": "go,python,pascal,delphi,bash,shellscript,bat,scala,kotlin,r,fsharp",
+          "description": "LanguageIds (comma-separated) supported for `Auto Move To End` via `;` not `Auto Put Semicolon`.\nFor languageId/s not included in both of the lists, gonna be ignored via this extension.",
           "type": "string"
         },
-        "autoSemicolon.supportedFileFormats.ignores.quotes": {
+        "autoSemicolon.supportedLanguageId.ignores.quotes": {
           "default": true,
           "description": "Support `AutoInsertSemicolon` or `AutoMoveFormats` in quotes?",
           "type": "boolean"
         },
-        "autoSemicolon.supportedFileFormats.ignores.theForStatement": {
+        "autoSemicolon.supportedLanguageId.ignores.theForStatement": {
           "default": true,
           "description": "Consider `for (..;..;..)` with it's own behavior for `AutoInsertSemicolon` && `AutoMoveFormats`",
           "type": "boolean"

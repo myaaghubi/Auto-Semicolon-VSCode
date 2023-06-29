@@ -42,11 +42,11 @@ function getConfig() {
 }
 
 function isQuotesIgnored() {
-	return getConfig().supportedFileFormats.ignores.quotes;
+	return getConfig().supportedLanguageId.ignores.quotes;
 }
 
 function isForStatementIgnored() {
-	return getConfig().supportedFileFormats.ignores.theForStatement;
+	return getConfig().supportedLanguageId.ignores.theForStatement;
 }
 
 function isUnallowdEndsIncluded(lastCharacter: string) {
@@ -57,13 +57,13 @@ function isUnallowdEndsIncluded(lastCharacter: string) {
 	return unallowedEnds.includes(lastCharacter);
 }
 
-function isAutoSemicolonFormatsIncluded(languageId: string | undefined) {
+function isAutoSemicolonLanguageIdIncluded(languageId: string | undefined) {
 	if (!languageId)
 		return false;
 
-	languageId = '.' + languageId;
+	languageId = languageId;
 
-	let formats = getConfig().supportedFileFormats.autoInsertSemicolon.split(",");
+	let formats = getConfig().supportedLanguageId.autoInsertSemicolon.split(",");
 	if (!Array.isArray(formats))
 		return false;
 
@@ -74,13 +74,13 @@ function isAutoSemicolonFormatsIncluded(languageId: string | undefined) {
 	return false;
 }
 
-function isAutoMoveFormatsIncluded(languageId: string | null | undefined) {
-	if (isEmpty(languageId) || !getConfig().supportedFileFormats.autoMoveEnable)
+function isAutoMoveLanguageIdIncluded(languageId: string | null | undefined) {
+	if (isEmpty(languageId) || !getConfig().supportedLanguageId.autoMoveEnable)
 		return false;
 
-	languageId = '.' + languageId;
+	languageId = languageId;
 
-	let formats = getConfig().supportedFileFormats.autoMoveFormats.split(",");
+	let formats = getConfig().supportedLanguageId.autoMoveFormats.split(",");
 	if (!Array.isArray(formats))
 		return false;
 
@@ -113,8 +113,8 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 					let position: vscode.Position;
 					let match;
 
-					autoSemicolonFormatsIncluded = isAutoSemicolonFormatsIncluded(languageId);
-					autoMoveFormatsIncluded = isAutoMoveFormatsIncluded(languageId);
+					autoSemicolonFormatsIncluded = isAutoSemicolonLanguageIdIncluded(languageId);
+					autoMoveFormatsIncluded = isAutoMoveLanguageIdIncluded(languageId);
 
 					position = newPosition(line, selection.active.character + 1);
 
