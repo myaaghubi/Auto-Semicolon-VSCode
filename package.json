@@ -2,7 +2,7 @@
   "name": "auto-semicolon-vscode",
   "displayName": "Auto Semicolon",
   "description": "Auto put/position for semicolons & move to the end of line after the last bracket. PHP supported `javascript`, `c#`, `c/c++`, `java`, `perl`, `dart`, etc. are ok.",
-  "version": "1.3.0",
+  "version": "1.5.0",
   "publisher": "myaaghubi",
   "license": "GPL-3.0",
   "icon": "icon.png",
@@ -24,19 +24,29 @@
     "helper",
     "keybindings",
     "shortcut",
+    "auto",
     "semicolon",
     "handy",
     "php",
+    "perl",
     "javascript",
     "typescript",
     "c#",
     "c",
     "c++",
     "java",
-    "perl",
     "dart",
+    "r",
+    "swift",
+    "go",
     "python",
-    "go"
+    "pascal",
+    "delphi",
+    "shell",
+    "bash",
+    "bat",
+    "scala",
+    "kotlin"
   ],
   "activationEvents": [
     "onStartupFinished",
@@ -86,25 +96,35 @@
     "configuration": {
       "title": "Auto Semicolon",
       "properties": {
-        "autoSemicolon.autoSemicolon.unallowedEnds": {
+        "autoSemicolon.autoInsertSemicolon.unallowedEnds": {
           "default": ";,{,}",
-          "description": "Just `Auto Move` gonna apply for lines ends to these characters.",
+          "description": "Just `Auto Move` gonna apply for lines ends to these characters (comma-separated).",
           "type": "string"
         },
-        "autoSemicolon.supportedFileFormats.autoSemicolon": {
-          "default": ".php,.js,.ts,.c,.cpp,.cs,.dart,.java",
-          "description": "File formats for `Auto Put Semicolon` by `;`.\nFile formats not included in both of the lists, gonna be ignored via this extension.",
+        "autoSemicolon.supportedLanguageId.autoInsertSemicolon": {
+          "default": "javascript,typescript,php,perl,c,objective-c,cpp,objective-cpp,csharp,dart,java,swift,ruby",
+          "description": "LanguageIds (comma-separated) supported for `AutoInsertSemicolon` via `;`.\nFor languageId/s not included in both of the lists, gonna be ignored via this extension.",
           "type": "string"
         },
-        "autoSemicolon.supportedFileFormats.autoMoveEnable": {
+        "autoSemicolon.supportedLanguageId.autoMoveEnable": {
           "default": true,
           "description": "`Auto Move` feature enable/disable.",
           "type": "boolean"
         },
-        "autoSemicolon.supportedFileFormats.autoMoveFormats": {
-          "default": ".go,.py",
-          "description": "File formats for `Auto Move To End` by `;` not `Auto Put Semicolon`.\nFile formats not included in both of the lists, gonna be ignored via this extension.",
+        "autoSemicolon.supportedLanguageId.autoMoveFormats": {
+          "default": "go,python,pascal,delphi,bash,shellscript,bat,scala,kotlin,r,fsharp",
+          "description": "LanguageIds (comma-separated) supported for `Auto Move To End` via `;` not `Auto Put Semicolon`.\nFor languageId/s not included in both of the lists, gonna be ignored via this extension.",
           "type": "string"
+        },
+        "autoSemicolon.supportedLanguageId.ignores.quotes": {
+          "default": true,
+          "description": "Support `AutoInsertSemicolon` or `AutoMoveFormats` in quotes?",
+          "type": "boolean"
+        },
+        "autoSemicolon.supportedLanguageId.ignores.theForStatement": {
+          "default": true,
+          "description": "Consider `for (..;..;..)` with it's own behavior for `AutoInsertSemicolon` && `AutoMoveFormats`",
+          "type": "boolean"
         }
       }
     }

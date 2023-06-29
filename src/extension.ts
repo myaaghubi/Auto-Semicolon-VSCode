@@ -26,7 +26,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(autoSemicolone);
 	context.subscriptions.push(autoSemicoloneFTE);
 
-	await removeOldVersionAfterMigration();
+	await taskChecker(context);
 }
 
 export function deactivate() { }
@@ -41,21 +41,29 @@ function getConfig() {
 	return vscode.workspace.getConfiguration('autoSemicolon');
 }
 
+function isQuotesIgnored() {
+	return getConfig().supportedLanguageId.ignores.quotes;
+}
+
+function isForStatementIgnored() {
+	return getConfig().supportedLanguageId.ignores.theForStatement;
+}
+
 function isUnallowdEndsIncluded(lastCharacter: string) {
-	let unallowedEnds = getConfig().autoSemicolon.unallowedEnds.split(",");
+	let unallowedEnds = getConfig().autoInsertSemicolon.unallowedEnds.split(",");
 	if (!Array.isArray(unallowedEnds))
 		return false;
 
 	return unallowedEnds.includes(lastCharacter);
 }
 
-function isAutoSemicolonFormatsIncluded(languageId: string | undefined) {
+function isAutoSemicolonLanguageIdIncluded(languageId: string | undefined) {
 	if (!languageId)
 		return false;
 
-	languageId = '.' + languageId;
+	languageId = languageId;
 
-	let formats = getConfig().supportedFileFormats.autoSemicolon.split(",");
+	let formats = getConfig().supportedLanguageId.autoInsertSemicolon.split(",");
 	if (!Array.isArray(formats))
 		return false;
 
@@ -66,13 +74,13 @@ function isAutoSemicolonFormatsIncluded(languageId: string | undefined) {
 	return false;
 }
 
-function isAutoMoveFormatsIncluded(languageId: string | null | undefined) {
-	if (isEmpty(languageId) || !getConfig().supportedFileFormats.autoMoveEnable)
+function isAutoMoveLanguageIdIncluded(languageId: string | null | undefined) {
+	if (isEmpty(languageId) || !getConfig().supportedLanguageId.autoMoveEnable)
 		return false;
 
-	languageId = '.' + languageId;
+	languageId = languageId;
 
-	let formats = getConfig().supportedFileFormats.autoMoveFormats.split(",");
+	let formats = getConfig().supportedLanguageId.autoMoveFormats.split(",");
 	if (!Array.isArray(formats))
 		return false;
 
@@ -98,60 +106,66 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 	editor.edit(() => {
 		try {
 			editor.selections.forEach((selection) => {
-				const line = editor.document.lineAt(selection.active.line);
-				const lineText = line.text.trimEnd();
-				const currentPos = selection.active.character;
-				let position: vscode.Position;
-				let match;
+				try {
+					const line = editor.document.lineAt(selection.active.line);
+					const lineText = line.text.trimEnd();
+					const currentPos = selection.active.character;
+					let position: vscode.Position;
+					let match;
 
-				autoSemicolonFormatsIncluded = isAutoSemicolonFormatsIncluded(languageId);
-				autoMoveFormatsIncluded = isAutoMoveFormatsIncluded(languageId);
+					autoSemicolonFormatsIncluded = isAutoSemicolonLanguageIdIncluded(languageId);
+					autoMoveFormatsIncluded = isAutoMoveLanguageIdIncluded(languageId);
 
-				position = newPosition(line, selection.active.character + 1);
+					position = newPosition(line, selection.active.character + 1);
 
-				if (lineText.length === 0 || !languageId) {
-					textEdit.insert(selection.active, ';');
-
-				} else if (!autoSemicolonFormatsIncluded && !autoMoveFormatsIncluded) {
-					textEdit.insert(selection.active, ';');
-
-				} else if (!forceToEnd && isCommented(lineText, currentPos)) {
-					textEdit.insert(selection.active, ';');
-
-				} else if (!forceToEnd && isInStringLiteral(lineText, currentPos)) {
-					textEdit.insert(selection.active, ';');
-
-				} else if (!forceToEnd && (match = findTheForStatement(lineText, currentPos)) !== null) {
-					// each for(;;) statement has two ";"
-					if (match[1].split(";").length - 1 < 2) {
+					if (lineText.length === 0 || !languageId) {
 						textEdit.insert(selection.active, ';');
-						position = newPosition(line, selection.active.character + 1);
-					} else if (!forceToEnd && autoSemicolonFormatsIncluded && (!isUnallowdEndsIncluded(lineText[lineText.length - 1]) || currentPos === line.text.length)) {
-						let length = putSemicolonAfterPos((match as RegExpMatchArrayWithIndex).index + match[0].length, textEdit, selection, line);
+
+					} else if (!autoSemicolonFormatsIncluded && !autoMoveFormatsIncluded) {
+						textEdit.insert(selection.active, ';');
+
+					} else if (!forceToEnd && isCommented(lineText, currentPos)) {
+						textEdit.insert(selection.active, ';');
+
+					} else if (!forceToEnd && isQuotesIgnored() && isInStringLiteral(lineText, currentPos)) {
+						textEdit.insert(selection.active, ';');
+
+					} else if (!forceToEnd && isForStatementIgnored() && (match = findTheForStatement(lineText, currentPos)) !== null) {
+						// each for(;;) statement has two ";"
+						if (match[1].split(";").length - 1 < 2) {
+							console.log("1");
+							textEdit.insert(selection.active, ';');
+							position = newPosition(line, selection.active.character + 1);
+						} else if (autoSemicolonFormatsIncluded) {
+							console.log("2");
+							let length = putSemicolonAfterPos((match as RegExpMatchArrayWithIndex).index, textEdit, selection, line);
+							position = newPosition(line, length);
+						}
+
+					} else if (!forceToEnd && autoSemicolonFormatsIncluded) {
+						let length = line.range.end.character + 1;
+						if (isBetweenTags('{', '}', lineText, currentPos)) {
+							length = putSemicolonBefore('}', textEdit, selection, line);
+						} else if (!isUnallowdEndsIncluded(lineText[lineText.length - 1]) || currentPos === line.text.length) {
+							length = putSemicolonBefore('//', textEdit, selection, line) + 1;
+						}
+
+						position = newPosition(line, length);
+
+					} else {
+						// just move to the end
+						let length = line.range.end.character + 1;
 						position = newPosition(line, length);
 					}
 
-				} else if (!forceToEnd && autoSemicolonFormatsIncluded) {
-					let length = line.range.end.character + 1;
-					if (isBetweenTags('{', '}', lineText, currentPos)) {
-						length = putSemicolonBefore('}', textEdit, selection, line);
-					} else if (!isUnallowdEndsIncluded(lineText[lineText.length - 1]) || currentPos === line.text.length) {
-						length = putSemicolonBefore('//', textEdit, selection, line) + 1;
-					}
-
-					position = newPosition(line, length);
-
-				} else {
-					// just move to the end
-					let length = line.range.end.character + 1;
-					position = newPosition(line, length);
+					selection = new vscode.Selection(position, position);
+					selections.push(selection);
+				} catch (error) {
+					// logIt(error.message);
 				}
-
-				selection = new vscode.Selection(position, position);
-				selections.push(selection);
 			});
-		} catch (e) {
-			//message(e.toString());
+		} catch (error) {
+			// logIt(error.message);
 		}
 	}).then(() => {
 		editor.selections = selections;
@@ -160,17 +174,7 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 
 function putSemicolonAfterPos(position: number, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine): number {
 	position = position >= 0 ? position : 0;
-	const currentPos = selection.active.character;
-	let lineText = line.text;
-
-	let lineTextTrimmed = lineText.substring(0, position);//.trimEnd();
-
-	if (!isUnallowdEndsIncluded(lineTextTrimmed[lineTextTrimmed.length - 1]) || currentPos === line.text.length) {
-		lineText = lineText.replace(lineTextTrimmed, lineTextTrimmed + ';');
-		textEdit.delete(new vscode.Selection(newPosition(line, 0), newPosition(line, line.text.length)));
-		textEdit.insert(newPosition(line, 0), lineText);
-	}
-	return position + 1;
+	return putSemicolonBefore('//',textEdit, selection, line)+1;
 }
 
 function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine): number {
@@ -253,11 +257,64 @@ function isEmpty(value: string | any[] | null | undefined): boolean {
 	return (value == null || value.length === 0);
 }
 
-async function message(message: string | any[] | null | undefined) {
+async function logIt(message: string | any[] | null | undefined) {
 	console.log(message);
-	await vscode.window.showWarningMessage(async function (params: string | any[] | null | undefined) {
-		message;
-	}.toString());
+	// vscode.window.showWarningMessage(message?.toString());
+}
+
+async function taskChecker(context: vscode.ExtensionContext) {
+	let runCounter = 1;
+	let runCounterStr = await context.secrets.get(`runCounter`);
+	if (runCounterStr) {
+		runCounter = parseInt(runCounterStr) + 1;
+	}
+	context.secrets.store(`runCounter`, runCounter.toString());
+
+
+	let commented = await context.secrets.get(`commented`);
+	if (!commented || commented === undefined) {
+		context.secrets.store(`commented`, '0');
+	}
+
+	if (runCounter <= 0) {
+		await showSettingsCheckMessage();
+		await removeOldVersionAfterMigration();
+	} else if (runCounter >= 100) {
+		if (commented === '0' && runCounter % 5 === 0) {
+			const resp = await showRateRequestMessage(context);
+			if (resp) {
+				await context.secrets.store(`commented`, '1');
+			}
+		}
+	}
+}
+
+async function showSettingsCheckMessage() {
+	const resp = await vscode.window.showInformationMessage(
+		"Do you want to check the settings for Auto-Semicolon first?",
+		"Check Settings...",
+		"Later"
+	);
+
+	if (resp === "Check Settings...") {
+		vscode.commands.executeCommand('workbench.action.openSettings', 'Auto Semicolon');
+	}
+}
+
+async function showRateRequestMessage(context: vscode.ExtensionContext): Promise<boolean> {
+	const resp = await vscode.window.showInformationMessage(
+		"You are using this extension for a while, please give me your opinion about it with a 5 stars comment",
+		"Open Comments...",
+		"Later"
+	);
+
+	if (resp === "Open Comments...") {
+		const link = 'https://marketplace.visualstudio.com/items?itemName=myaaghubi.auto-semicolon-vscode&ssr=false#review-details';
+		vscode.env.openExternal(vscode.Uri.parse(link));
+		return true;
+	}
+
+	return false;
 }
 
 async function removeOldVersionAfterMigration() {

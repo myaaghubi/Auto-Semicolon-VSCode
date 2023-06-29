@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.5.0
+
+- Added 2 new options in the settings
+- Fixed a bug with `for(;;)`
+- Some fixes & changes
+- Icon changed
+
 ## 1.3.0
 
 - Added some custom settings
