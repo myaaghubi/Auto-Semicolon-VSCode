@@ -1,8 +1,8 @@
 {
   "name": "auto-semicolon-vscode",
   "displayName": "Auto Semicolon",
-  "description": "Both `Semicolon separated` and `Non-Semicolon separated` programming languages are supported",
-  "version": "1.5.1",
+  "description": "A handy tool to make programming delicious. All programming languages include both `Semicolon separated` and `Non-Semicolon separated` supported.",
+  "version": "1.5.2",
   "publisher": "myaaghubi",
   "license": "GPL-3.0",
   "icon": "icon.png",
@@ -98,32 +98,32 @@
       "properties": {
         "autoSemicolon.autoInsertSemicolon.unallowedEnds": {
           "default": ";,{,}",
-          "description": "Just `Auto Move` gonna apply for lines ends to these characters (comma-separated).",
+          "description": "For lines ended to characters above, apply `Auto Move` instead of `Auto Insert Semicolon` (comma-separated).",
           "type": "string"
         },
         "autoSemicolon.supportedLanguageId.autoInsertSemicolon": {
           "default": "javascript,typescript,php,perl,c,objective-c,cpp,objective-cpp,csharp,dart,java,swift,ruby",
-          "description": "LanguageIds (comma-separated) supported for `AutoInsertSemicolon` via `;`.\nFor languageId/s not included in both of the lists, gonna be ignored via this extension.",
+          "description": "Languages (language-ids, comma-separated) supported for `AutoInsertSemicolon`.\nLanguages not included in both of the lists will be ignored via this extension.",
           "type": "string"
         },
         "autoSemicolon.supportedLanguageId.autoMoveEnable": {
           "default": true,
-          "description": "`Auto Move` feature enable/disable.",
+          "description": "`Auto Move` feature?",
           "type": "boolean"
         },
         "autoSemicolon.supportedLanguageId.autoMoveFormats": {
           "default": "go,python,pascal,delphi,bash,shellscript,bat,scala,kotlin,r,fsharp",
-          "description": "LanguageIds (comma-separated) supported for `Auto Move To End` via `;` not `Auto Insert Semicolon`.\nFor languageId/s not included in both of the lists, gonna be ignored via this extension.",
+          "description": "Languages (language-ids, comma-separated) supported for `Auto Move To End` (happens by pressing `;`) .\nLanguages not included in both of the lists will be ignored via this extension.",
           "type": "string"
         },
         "autoSemicolon.supportedLanguageId.ignores.quotes": {
           "default": true,
-          "description": "Support `AutoInsertSemicolon` and/or `AutoMoveFormats` in quotes?",
+          "description": "Ignore while in quotes?",
           "type": "boolean"
         },
         "autoSemicolon.supportedLanguageId.ignores.theForStatement": {
           "default": true,
-          "description": "Consider `for (..;..;..)` with it's own behavior for `AutoInsertSemicolon` && `AutoMoveFormats`",
+          "description": "Consider `for (..;..;..)` statement",
           "type": "boolean"
         }
       }
@@ -139,7 +139,7 @@
   },
   "devDependencies": {
     "@types/vscode": "^1.31.0",
-    "@types/glob": "^8.1.0",
+    "@types/glob": "^10.4.5",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
