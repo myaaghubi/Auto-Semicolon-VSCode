@@ -213,7 +213,7 @@ function isCommented(lineText: string, currentPos: number): boolean {
 }
 
 function findTheForStatement(lineText: string, currentPos: number): string[] | null {
-	const regex = /for\s*\((.*?)\)/g;
+	const regex = /for\s*\((.*)\)/g;
 	let match;
 
 	while ((match = regex.exec(lineText)) !== null) {
