@@ -8,22 +8,22 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	);
 
-	let autoSemicolone = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon',
+	let autoSemicolon = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon',
 		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
 			return autoSemicolonCommand(editor, textEdit, false);
 		}
 	);
 
 	// auto put the semicolon (ignore the {}) at the end 
-	let autoSemicoloneFTE = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon-fte',
+	let autoSemicolonFTE = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon-fte',
 		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
 			return autoSemicolonCommand(editor, textEdit, true);
 		}
 	);
 
 	context.subscriptions.push(semicolonAtPosition);
-	context.subscriptions.push(autoSemicolone);
-	context.subscriptions.push(autoSemicoloneFTE);
+	context.subscriptions.push(autoSemicolon);
+	context.subscriptions.push(autoSemicolonFTE);
 
 	await taskChecker(context);
 }
