@@ -8,22 +8,22 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	);
 
-	let autoSemicolone = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon',
+	let autoSemicolon = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon',
 		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
 			return autoSemicolonCommand(editor, textEdit, false);
 		}
 	);
 
 	// auto put the semicolon (ignore the {}) at the end 
-	let autoSemicoloneFTE = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon-fte',
+	let autoSemicolonFTE = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.auto-insert-semicolon-fte',
 		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
 			return autoSemicolonCommand(editor, textEdit, true);
 		}
 	);
 
 	context.subscriptions.push(semicolonAtPosition);
-	context.subscriptions.push(autoSemicolone);
-	context.subscriptions.push(autoSemicoloneFTE);
+	context.subscriptions.push(autoSemicolon);
+	context.subscriptions.push(autoSemicolonFTE);
 
 	await taskChecker(context);
 }
@@ -128,12 +128,10 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 					} else if (!forceToEnd && isForStatementIgnored() && (match = findTheForStatement(lineText, currentPos)) !== null) {
 						// each for(;;) statement has two ";"
 						if (match[1].split(";").length - 1 < 2) {
-							console.log("1");
 							textEdit.insert(selection.active, ';');
 							position = newPosition(line, selection.active.character + 1);
 						} else if (autoSemicolonFormatsIncluded) {
-							console.log("2");
-							let length = putSemicolonAfterPos((match as RegExpMatchArrayWithIndex).index, textEdit, selection, line);
+							let length = putSemicolonAfterPos((match as RegExpMatchArrayWithIndex).index, textEdit, selection, line, true);
 							position = newPosition(line, length);
 						}
 
@@ -167,12 +165,12 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 	});
 }
 
-function putSemicolonAfterPos(position: number, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine): number {
+function putSemicolonAfterPos(position: number, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine, justMove: boolean=false): number {
 	position = position >= 0 ? position : 0;
-	return putSemicolonBefore('//', textEdit, selection, line) + 1;
+	return putSemicolonBefore('//', textEdit, selection, line, justMove) + 1;
 }
 
-function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine): number {
+function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine, justMove: boolean=false): number {
 	let lineText = line.text.trimEnd();
 	const currentPos = selection.active.character;
 	const posClose = lineText.indexOf(tag, currentPos);
@@ -192,7 +190,9 @@ function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, select
 		return length - tag.length + 1;
 	}
 
-	textEdit.insert(newPosition(line, length), ';');
+	if (!justMove) {
+		textEdit.insert(newPosition(line, length), ';');
+	}
 	return length;
 }
 
@@ -207,17 +207,28 @@ function isBetweenTags(open: string, close: string, lineText: string, currentPos
 	return posOpen >= 0 && posOpen < currentPos && currentPos <= posClose && posClose_ < posOpen;
 }
 
+function isBetweenTagsB(open: string, close: string, lineText: string, currentPos: number): boolean {
+	const posOpen = lineText.lastIndexOf(open, currentPos);
+	const posClose = lineText.indexOf(close, currentPos);
+  
+	return (
+		posOpen >= 0 && // open tag exists before current position
+		posOpen < currentPos && // open tag is before current position
+		posClose >= currentPos // close tag is after current position
+	);
+}
+
 function isCommented(lineText: string, currentPos: number): boolean {
 	const pos = lineText.lastIndexOf('//', currentPos);
 	return pos >= 0;
 }
 
 function findTheForStatement(lineText: string, currentPos: number): string[] | null {
-	const regex = /for\s*\((.*?)\)/g;
+	const regex = /for\s*\((.*)\)/g;
 	let match;
 
 	while ((match = regex.exec(lineText)) !== null) {
-		if (match.index <= currentPos && match.index + match[0].length >= currentPos && isBetweenTags("(", ")", lineText, currentPos)) {
+		if (isBetweenTagsB("(", ")", lineText, currentPos)) {
 			return match;
 		}
 	}

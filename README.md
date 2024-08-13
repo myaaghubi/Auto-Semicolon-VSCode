@@ -4,25 +4,29 @@
 [![release](https://img.shields.io/github/release/myaaghubi/Auto-Semicolon-VSCode.svg?style=for-the-badge&logo=github&logoColor=white&colorA=2b303b&colorB=00e8c6)](https://github.com/myaaghubi/Auto-Semicolon-VSCode/releases/latest)
 [![rating](https://img.shields.io/visual-studio-marketplace/stars/myaaghubi.auto-semicolon-vscode?style=for-the-badge&logo=reverbnation&logoColor=white&colorA=2b303b&colorB=FFE66D)](https://marketplace.visualstudio.com/items?itemName=myaaghubi.auto-semicolon-vscode)
 
+A handy tool to make programming delicious.
+
 This extension helps by moving to the end of the line `and/or` putting `;` in the right place. 
 
-Both `Semicolon separated` and `Non-Semicolon separated` programming languages are supported.
-It's **`auto`**, **`smart`**, **`handy`**, and **`customizable`** if you find joy in it don't forget to [🍔 donate](#-donate).
+All programming languages include both `Semicolon separated` and `Non-Semicolon separated` supported.
+It's **`auto`**, **`smart`**, **`handy`**, and **`customizable`**. Don't forget to [🍔 donate](#-donate) if you find joy in it.
 
 I found nothing for `PHP` so made my own, now it's the `best` for this use.
 
 ## How To Use
 1. Install it from [market place > auto semicolon](https://marketplace.visualstudio.com/items?itemName=myaaghubi.auto-semicolon-vscode).
-2. Use `;` just like before.
+2. Use `;` don't need to move your mouse.
 
 
 ## Shortcuts
-- `alt + ;` then `;` > To put `;` right in place (not auto).
+- `;` > To have it auto
+- `alt + ;` then `;` > To put `;` right in place (not auto)
 
-    Or use command palette `ctrl+shift+p` > `Auto Semicolon > Insert At The Position`.
+    Or use the command palette `ctrl+shift+p` > `Auto Semicolon > Insert At The Position`.
 - `alt` + twice `;` > To ignore enclosing curly bracket pair `{..}` (force move to the end of the line)
 
     Or use `ctrl+shift+p` > `Auto Semicolon > Auto Insert At The End`.
+    You can change this option from settings.
 
 ## Notes
 - `Multiple cursors` has been supported.
