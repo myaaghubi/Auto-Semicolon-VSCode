@@ -48,8 +48,18 @@ function isForStatementIgnored() {
 	return getConfig().supportedLanguageId.ignores.theForStatement;
 }
 
-function isUnallowdEndsIncluded(lastCharacter: string) {
+function isUnallowdEndsIncluded(lineText: string) {
+	const pos = lineText.lastIndexOf('//');
+
+	// it it commented
+	if (pos >= 0) {
+		lineText = lineText.substring(0, pos);
+	}
+
+	let lastCharacter = lineText[lineText.length - 1];
+
 	let unallowedEnds = getConfig().autoInsertSemicolon.unallowedEnds.split(",");
+
 	if (!Array.isArray(unallowedEnds))
 		return false;
 
@@ -133,13 +143,13 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 						} else if (autoSemicolonFormatsIncluded) {
 							let length = putSemicolonAfterPos((match as RegExpMatchArrayWithIndex).index, textEdit, selection, line, true);
 							position = newPosition(line, length);
-						}
+						}                                
 
 					} else if (!forceToEnd && autoSemicolonFormatsIncluded) {
 						let length = line.range.end.character + 1;
 						if (isBetweenTags('{', '}', lineText, currentPos)) {
 							length = putSemicolonBefore('}', textEdit, selection, line);
-						} else if (!isUnallowdEndsIncluded(lineText[lineText.length - 1]) || currentPos === line.text.length) {
+						} else if (!isUnallowdEndsIncluded(lineText) || currentPos === line.text.length) {
 							length = putSemicolonBefore('//', textEdit, selection, line) + 1;
 						}
 
@@ -165,12 +175,12 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 	});
 }
 
-function putSemicolonAfterPos(position: number, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine, justMove: boolean=false): number {
+function putSemicolonAfterPos(position: number, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine, justMove: boolean = false): number {
 	position = position >= 0 ? position : 0;
 	return putSemicolonBefore('//', textEdit, selection, line, justMove) + 1;
 }
 
-function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine, justMove: boolean=false): number {
+function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine, justMove: boolean = false): number {
 	let lineText = line.text.trimEnd();
 	const currentPos = selection.active.character;
 	const posClose = lineText.indexOf(tag, currentPos);
@@ -180,7 +190,7 @@ function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, select
 		const lineTextTrimmed = lineText.substring(0, posClose).trimEnd();
 		length = lineTextTrimmed.length;
 
-		if (!isUnallowdEndsIncluded(lineTextTrimmed[lineTextTrimmed.length - 1]) || currentPos === line.text.length) {
+		if (!isUnallowdEndsIncluded(lineTextTrimmed) || currentPos === line.text.length) {
 			lineText = lineText.replace(lineTextTrimmed, lineTextTrimmed + ';');
 			length += 1;
 			textEdit.delete(new vscode.Selection(newPosition(line, 0), newPosition(line, line.text.length)));
@@ -210,7 +220,7 @@ function isBetweenTags(open: string, close: string, lineText: string, currentPos
 function isBetweenTagsB(open: string, close: string, lineText: string, currentPos: number): boolean {
 	const posOpen = lineText.lastIndexOf(open, currentPos);
 	const posClose = lineText.indexOf(close, currentPos);
-  
+
 	return (
 		posOpen >= 0 && // open tag exists before current position
 		posOpen < currentPos && // open tag is before current position
