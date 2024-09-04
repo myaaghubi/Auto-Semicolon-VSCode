@@ -37,6 +37,29 @@ let autoSemicolonFormatsIncluded = true;
 let autoMoveFormatsIncluded = false;
 let commentDelimiter = '//';
 
+
+type StringDictionary = {
+    [key: string]: string;
+};
+
+const languagesDelimiter:StringDictionary = {
+	"dotenv": '#',
+	"dockerfile": '#',
+	"snippets": '#',
+	"python": '#',
+	"ruby": '#',
+	"perl": '#',
+	"bash": '#',
+	"shellscript": '#',
+	"r": '#',
+	"julia": '#',
+	"coffeescript": '#',
+	"ini": ';',
+	"bat": ':',
+	"sql": '%',
+	"tex": '%',
+};
+
 function getConfig() {
 	return vscode.workspace.getConfiguration('autoSemicolon');
 }
@@ -257,33 +280,18 @@ function isBetweenTagsB(open: string, close: string, lineText: string, currentPo
 }
 
 function getCommentDelimiter(languageId: string | undefined): string {
-	let delimiter = '//';
+	let delimiterDefault = '//';
 
 	if (!languageId)
-		return delimiter;
+		return delimiterDefault;
 
-	// languages that use # to comment a line
-	const languagesSharp = [
-		"python",
-		"ruby",
-		"perl",
-		"bash",
-		"shellscript",
-		"php",
-		"t",
-		"lisp",
-		"julia",
-		"coffeescript",
-		"clojure"
-	];
-
-	for (const item of languagesSharp) {
-		if (item == languageId) {
-			return '#';
+	for (const key in languagesDelimiter) {
+		if (key == languageId) {
+			return languagesDelimiter[key];
 		}
 	}
 
-	return delimiter;
+	return delimiterDefault;
 }
 
 function isCommented(lineText: string, currentPos: number): boolean {
