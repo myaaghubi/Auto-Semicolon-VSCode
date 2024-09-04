@@ -150,7 +150,7 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 						if (isBetweenTags('{', '}', lineText, currentPos)) {
 							length = putSemicolonBefore('}', textEdit, selection, line);
 						} else if (!isUnallowdEndsIncluded(lineText) || currentPos === line.text.length) {
-							length = putSemicolonBefore('//', textEdit, selection, line) + 1;
+							length = autoSemicolonBeforeComment(textEdit, selection, line) + 1;
 						}
 
 						position = newPosition(line, length);
@@ -177,7 +177,7 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 
 function putSemicolonAfterPos(position: number, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine, justMove: boolean = false): number {
 	position = position >= 0 ? position : 0;
-	return putSemicolonBefore('//', textEdit, selection, line, justMove) + 1;
+	return autoSemicolonBeforeComment(textEdit, selection, line, justMove) + 1;
 }
 
 function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine, justMove: boolean = false): number {
@@ -198,6 +198,32 @@ function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, select
 		}
 
 		return length - tag.length + 1;
+	}
+
+	if (!justMove) {
+		textEdit.insert(newPosition(line, length), ';');
+	}
+	return length;
+}
+
+function autoSemicolonBeforeComment(textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine, justMove: boolean = false): number {
+	let lineText = line.text.trimEnd();
+	const currentPos = selection.active.character;
+	const posClose = lineText.indexOf('//', currentPos);
+	let length = lineText.length;
+
+	if (posClose >= 0) {
+		const lineTextTrimmed = lineText.substring(0, posClose).trimEnd();
+		length = lineTextTrimmed.length;
+
+		if (!isUnallowdEndsIncluded(lineTextTrimmed) || currentPos === length) {
+			lineText = lineText.replace(lineTextTrimmed, lineTextTrimmed + ';');
+			length += 1;
+			textEdit.delete(new vscode.Selection(newPosition(line, 0), newPosition(line, line.text.length)));
+			textEdit.insert(newPosition(line, 0), lineText);
+		}
+
+		return length - 1;
 	}
 
 	if (!justMove) {
