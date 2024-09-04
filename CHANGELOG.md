@@ -1,6 +1,11 @@
 # Change Log
 
-## 1.5.2 (latest)
+## 1.5.3 (latest)
+
+- Some fixes with lines ending with a comment
+- Support the languages with different comment delimiter/syntax
+
+## 1.5.2 (8/6/2024)
 
 For `for(...;...;...)` statement:
 - A bug fixed
