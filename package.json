@@ -2,7 +2,7 @@
   "name": "auto-semicolon-vscode",
   "displayName": "Auto Semicolon",
   "description": "A handy tool to make programming delicious. All programming languages include both `Semicolon separated` and `Non-Semicolon separated` supported.",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "publisher": "myaaghubi",
   "license": "GPL-3.0",
   "icon": "icon.png",
@@ -138,16 +138,16 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.7",
+    "@types/node": "20.x",
     "@types/vscode": "^1.31.0",
-    "@types/glob": "^10.4.5",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "16.x",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
+    "@vscode/test-electron": "^2.2.3",
     "eslint": "^8.34.0",
-    "glob": "^8.1.0",
-    "mocha": "^10.2.0",
-    "typescript": "^4.9.5",
-    "@vscode/test-electron": "^2.2.3"
+    "glob": "^10.4.5",
+    "mocha": "^10.7.3",
+    "typescript": "^4.9.5"
   }
 }
