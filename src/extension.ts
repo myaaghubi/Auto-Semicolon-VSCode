@@ -32,9 +32,10 @@ export function deactivate() { }
 
 type RegExpMatchArrayWithIndex = RegExpMatchArray & { index: number };
 
-// these two variables gonna fill later
+// these variables will fill later
 let autoSemicolonFormatsIncluded = true;
 let autoMoveFormatsIncluded = false;
+let commentDelimiter = '//';
 
 function getConfig() {
 	return vscode.workspace.getConfiguration('autoSemicolon');
@@ -49,7 +50,7 @@ function isForStatementIgnored() {
 }
 
 function isUnallowdEndsIncluded(lineText: string) {
-	const pos = lineText.lastIndexOf('//');
+	let pos = lineText.lastIndexOf(commentDelimiter);
 
 	// it it commented
 	if (pos >= 0) {
@@ -120,6 +121,7 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 
 					autoSemicolonFormatsIncluded = isAutoSemicolonLanguageIdIncluded(languageId);
 					autoMoveFormatsIncluded = isAutoMoveLanguageIdIncluded(languageId);
+					commentDelimiter = getCommentDelimiter(languageId);
 
 					position = newPosition(line, selection.active.character + 1);
 
@@ -143,7 +145,7 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 						} else if (autoSemicolonFormatsIncluded) {
 							let length = putSemicolonAfterPos((match as RegExpMatchArrayWithIndex).index, textEdit, selection, line, true);
 							position = newPosition(line, length);
-						}                                
+						}
 
 					} else if (!forceToEnd && autoSemicolonFormatsIncluded) {
 						let length = line.range.end.character + 1;
@@ -209,7 +211,7 @@ function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, select
 function autoSemicolonBeforeComment(textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine, justMove: boolean = false): number {
 	let lineText = line.text.trimEnd();
 	const currentPos = selection.active.character;
-	const posClose = lineText.indexOf('//', currentPos);
+	const posClose = lineText.indexOf(commentDelimiter, currentPos);
 	let length = lineText.length;
 
 	if (posClose >= 0) {
@@ -223,7 +225,7 @@ function autoSemicolonBeforeComment(textEdit: vscode.TextEditorEdit, selection: 
 			textEdit.insert(newPosition(line, 0), lineText);
 		}
 
-		return length - 1;
+		return length - commentDelimiter.length + 1;
 	}
 
 	if (!justMove) {
@@ -254,9 +256,38 @@ function isBetweenTagsB(open: string, close: string, lineText: string, currentPo
 	);
 }
 
+function getCommentDelimiter(languageId: string | undefined): string {
+	let delimiter = '//';
+
+	if (!languageId)
+		return delimiter;
+
+	// languages that use # to comment a line
+	const languagesSharp = [
+		"python",
+		"ruby",
+		"perl",
+		"bash",
+		"shellscript",
+		"php",
+		"t",
+		"lisp",
+		"julia",
+		"coffeescript",
+		"clojure"
+	];
+
+	for (const item of languagesSharp) {
+		if (item == languageId) {
+			return '#';
+		}
+	}
+
+	return delimiter;
+}
+
 function isCommented(lineText: string, currentPos: number): boolean {
-	const pos = lineText.lastIndexOf('//', currentPos);
-	return pos >= 0;
+	return lineText.lastIndexOf(commentDelimiter, currentPos) >= 0;
 }
 
 function findTheForStatement(lineText: string, currentPos: number): string[] | null {
