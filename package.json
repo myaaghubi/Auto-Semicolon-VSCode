@@ -2,7 +2,7 @@
   "name": "auto-semicolon-vscode",
   "displayName": "Auto Semicolon",
   "description": "A handy tool to make programming delicious. All programming languages include both `Semicolon separated` and `Non-Semicolon separated` supported.",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "publisher": "myaaghubi",
   "license": "GPL-3.0",
   "icon": "icon.png",
