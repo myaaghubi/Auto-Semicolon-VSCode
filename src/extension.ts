@@ -75,7 +75,7 @@ function isForStatementIgnored() {
 	return getConfig().supportedLanguageId.ignores.theForStatement;
 }
 
-function isUnallowdEndsIncluded(lineText: string) {
+function isUnallowedEndsIncluded(lineText: string) {
 	let pos = lineText.lastIndexOf(commentDelimiter);
 
 	// it it commented
@@ -177,7 +177,7 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 						let length = line.range.end.character + 1;
 						if (isBetweenTags('{', '}', lineText, currentPos)) {
 							length = putSemicolonBefore('}', textEdit, selection, line);
-						} else if (!isUnallowdEndsIncluded(lineText) || currentPos === line.text.length) {
+						} else if (!isUnallowedEndsIncluded(lineText) || currentPos === line.text.length) {
 							length = autoSemicolonBeforeComment(textEdit, selection, line) + 1;
 						}
 
@@ -218,7 +218,7 @@ function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, select
 		const lineTextTrimmed = lineText.substring(0, posClose).trimEnd();
 		length = lineTextTrimmed.length;
 
-		if (!isUnallowdEndsIncluded(lineTextTrimmed) || currentPos === line.text.length) {
+		if (!isUnallowedEndsIncluded(lineTextTrimmed) || currentPos === line.text.length) {
 			lineText = lineText.replace(lineTextTrimmed, lineTextTrimmed + ';');
 			length += 1;
 			textEdit.delete(new vscode.Selection(newPosition(line, 0), newPosition(line, line.text.length)));
@@ -244,7 +244,7 @@ function autoSemicolonBeforeComment(textEdit: vscode.TextEditorEdit, selection: 
 		const lineTextTrimmed = lineText.substring(0, posClose).trimEnd();
 		length = lineTextTrimmed.length;
 
-		if (!isUnallowdEndsIncluded(lineTextTrimmed) || currentPos === length) {
+		if (!isUnallowedEndsIncluded(lineTextTrimmed) || currentPos === length) {
 			lineText = lineText.replace(lineTextTrimmed, lineTextTrimmed + ';');
 			length += 1;
 			textEdit.delete(new vscode.Selection(newPosition(line, 0), newPosition(line, line.text.length)));
