@@ -2,6 +2,8 @@
 import * as vscode from 'vscode';
 
 export async function activate(context: vscode.ExtensionContext) {
+	devMode = context.extensionMode === vscode.ExtensionMode.Development;
+
 	let semicolonAtPosition = vscode.commands.registerTextEditorCommand('auto-semicolon-vscode.position-insert-semicolon',
 		(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit) => {
 			return semicolonCommand(editor, textEdit);
@@ -33,6 +35,7 @@ export function deactivate() { }
 type RegExpMatchArrayWithIndex = RegExpMatchArray & { index: number };
 
 // these variables will fill later
+let devMode = false;
 let autoSemicolonFormatsIncluded = true;
 let autoMoveFormatsIncluded = false;
 let commentDelimiter = '//';
@@ -188,12 +191,12 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 
 					selection = new vscode.Selection(position, position);
 					selections.push(selection);
-				} catch (error) {
-					// logIt(error.message);
+				} catch (error:any) {
+					logIt(error.message);
 				}
 			});
-		} catch (error) {
-			// logIt(error.message);
+		} catch (error:any) {
+			logIt(error.message);
 		}
 	}).then(() => {
 		editor.selections = selections;
@@ -339,8 +342,10 @@ function isEmpty(value: string | any[] | null | undefined): boolean {
 }
 
 async function logIt(message: string | any[] | null | undefined) {
-	console.log(message);
-	// vscode.window.showWarningMessage(message?.toString());
+	if (devMode) {
+		console.log(message);
+		// vscode.window.showWarningMessage(message?.toString());
+	}
 }
 
 async function taskChecker(context: vscode.ExtensionContext) {
