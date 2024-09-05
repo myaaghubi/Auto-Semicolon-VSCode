@@ -39,13 +39,14 @@ let devMode = false;
 let autoSemicolonFormatsIncluded = true;
 let autoMoveFormatsIncluded = false;
 let commentDelimiter = '//';
+let commentDelimiterIndex = -1;
 
 
 type StringDictionary = {
-    [key: string]: string;
+	[key: string]: string;
 };
 
-const languagesDelimiter:StringDictionary = {
+const languagesDelimiter: StringDictionary = {
 	"dotenv": '#',
 	"dockerfile": '#',
 	"snippets": '#',
@@ -76,13 +77,6 @@ function isForStatementIgnored() {
 }
 
 function isUnallowedEndsIncluded(lineText: string) {
-	let pos = lineText.lastIndexOf(commentDelimiter);
-
-	// it it commented
-	if (pos >= 0) {
-		lineText = lineText.substring(0, pos);
-	}
-
 	let lastCharacter = lineText[lineText.length - 1];
 
 	let unallowedEnds = getConfig().autoInsertSemicolon.unallowedEnds.split(",");
@@ -135,6 +129,11 @@ function semicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditor
 function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEditorEdit, forceToEnd: boolean) {
 	const selections: vscode.Selection[] = [];
 	const languageId = vscode.window.activeTextEditor?.document.languageId;
+
+	autoSemicolonFormatsIncluded = isAutoSemicolonLanguageIdIncluded(languageId);
+	autoMoveFormatsIncluded = isAutoMoveLanguageIdIncluded(languageId);
+	commentDelimiter = getCommentDelimiter(languageId);
+
 	editor.edit(() => {
 		try {
 			editor.selections.forEach((selection) => {
@@ -145,10 +144,7 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 					let position: vscode.Position;
 					let match;
 
-					autoSemicolonFormatsIncluded = isAutoSemicolonLanguageIdIncluded(languageId);
-					autoMoveFormatsIncluded = isAutoMoveLanguageIdIncluded(languageId);
-					commentDelimiter = getCommentDelimiter(languageId);
-
+					commentDelimiterIndex = indexTagOutOfQuotes(lineText, commentDelimiter);
 					position = newPosition(line, selection.active.character + 1);
 
 					if (lineText.length === 0 || !languageId) {
@@ -157,7 +153,7 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 					} else if (!autoSemicolonFormatsIncluded && !autoMoveFormatsIncluded) {
 						textEdit.insert(selection.active, ';');
 
-					} else if (!forceToEnd && isCommented(lineText, currentPos)) {
+					} else if (!forceToEnd && commentDelimiterIndex >= 0 && commentDelimiterIndex < currentPos) {
 						textEdit.insert(selection.active, ';');
 
 					} else if (!forceToEnd && isQuotesIgnored() && isInStringLiteral(lineText, currentPos)) {
@@ -191,11 +187,11 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 
 					selection = new vscode.Selection(position, position);
 					selections.push(selection);
-				} catch (error:any) {
+				} catch (error: any) {
 					logIt(error.message);
 				}
 			});
-		} catch (error:any) {
+		} catch (error: any) {
 			logIt(error.message);
 		}
 	}).then(() => {
@@ -237,11 +233,10 @@ function putSemicolonBefore(tag: string, textEdit: vscode.TextEditorEdit, select
 function autoSemicolonBeforeComment(textEdit: vscode.TextEditorEdit, selection: vscode.Selection, line: vscode.TextLine, justMove: boolean = false): number {
 	let lineText = line.text.trimEnd();
 	const currentPos = selection.active.character;
-	const posClose = lineText.indexOf(commentDelimiter, currentPos);
 	let length = lineText.length;
 
-	if (posClose >= 0) {
-		const lineTextTrimmed = lineText.substring(0, posClose).trimEnd();
+	if (commentDelimiterIndex >= 0) {
+		const lineTextTrimmed = lineText.substring(0, commentDelimiterIndex).trimEnd();
 		length = lineTextTrimmed.length;
 
 		if (!isUnallowedEndsIncluded(lineTextTrimmed) || currentPos === length) {
@@ -297,8 +292,27 @@ function getCommentDelimiter(languageId: string | undefined): string {
 	return delimiterDefault;
 }
 
-function isCommented(lineText: string, currentPos: number): boolean {
-	return lineText.lastIndexOf(commentDelimiter, currentPos) >= 0;
+function indexTagOutOfQuotes(line: string, tag: string): number {
+	const regex = new RegExp(`${commentDelimiter}(?!['"\`]\S)`, 'g');
+	const matches = [];
+
+	let match;
+	while ((match = regex.exec(line)) !== null) {
+		// Check the preceding characters
+		const precedingChars = line.slice(0, match.index);
+		const quoteCount = (precedingChars.match(/['"`]/g) || []).length;
+
+		// If the count of quotes is even, add the match
+		if (quoteCount % 2 == 0) {
+			matches.push(match);
+		}
+	}
+
+	if (matches.length == 0) {
+		return -1;
+	}
+
+	return matches[0].index;
 }
 
 function findTheForStatement(lineText: string, currentPos: number): string[] | null {
@@ -341,7 +355,7 @@ function isEmpty(value: string | any[] | null | undefined): boolean {
 	return (value == null || value.length === 0);
 }
 
-async function logIt(message: string | any[] | null | undefined) {
+async function logIt(message: string | any | any[] | null | undefined) {
 	if (devMode) {
 		console.log(message);
 		// vscode.window.showWarningMessage(message?.toString());
