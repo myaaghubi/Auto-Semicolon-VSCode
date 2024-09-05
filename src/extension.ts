@@ -182,6 +182,9 @@ function autoSemicolonCommand(editor: vscode.TextEditor, textEdit: vscode.TextEd
 					} else {
 						// just move to the end
 						let length = line.range.end.character + 1;
+						if (autoMoveFormatsIncluded) {
+							length = lineText.substring(0, commentDelimiterIndex).trimEnd().length;
+						}
 						position = newPosition(line, length);
 					}
 
