@@ -1,6 +1,10 @@
 # Change Log
 
-## 1.5.3 (latest)
+## 1.5.4 (latest)
+
+Some fixes & improvements
+
+## 1.5.3 (9/4/2024)
 
 - Some fixes with lines ending with a comment
 - Support the languages with different comment delimiter/syntax
