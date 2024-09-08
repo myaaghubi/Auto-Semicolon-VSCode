@@ -2,7 +2,7 @@
   "name": "auto-semicolon-vscode",
   "displayName": "Auto Semicolon",
   "description": "A handy tool to make programming delicious. All programming languages include both `Semicolon separated` and `Non-Semicolon separated` supported.",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "publisher": "myaaghubi",
   "license": "GPL-3.0",
   "icon": "icon.png",
@@ -20,13 +20,12 @@
     "Other"
   ],
   "keywords": [
-    "auto-semicolon",
     "helper",
-    "keybindings",
-    "shortcut",
     "auto",
-    "semicolon",
     "handy",
+    "comment",
+    "auto-semicolon",
+    "semicolon",
     "php",
     "perl",
     "javascript",
@@ -46,7 +45,9 @@
     "bash",
     "bat",
     "scala",
-    "kotlin"
+    "kotlin",
+    "keybindings",
+    "shortcut"
   ],
   "activationEvents": [
     "onStartupFinished",
@@ -59,7 +60,7 @@
     "commands": [
       {
         "command": "auto-semicolon-vscode.position-insert-semicolon",
-        "title": "Insert At The Position",
+        "title": "Insert Manually",
         "category": "Auto Semicolon"
       },
       {
@@ -69,7 +70,7 @@
       },
       {
         "command": "auto-semicolon-vscode.auto-insert-semicolon-fte",
-        "title": "Auto Insert At The End",
+        "title": "Insert Force To The End",
         "category": "Auto Semicolon"
       }
     ],
